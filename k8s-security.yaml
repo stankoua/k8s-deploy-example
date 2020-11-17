@@ -1,0 +1,99 @@
+# namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test
+---
+# service account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rvr-k8s-sa
+  namespace: test
+automountServiceAccountToken: true
+secrets:
+  - name: registry-secret
+---
+# role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: test
+  name: rvr-k8s-role
+rules:
+- apiGroups: [""]
+  resources:
+    - services
+    - pods
+    - replicationcontrollers
+    - persistentvolumeclaims
+  verbs:
+    - get
+    - list
+    - watch
+    - create
+    - delete
+    - update
+- apiGroups: [""]
+  resources:
+    - configmaps
+    - secrets
+    - pods/log
+    - pods/status
+  verbs:
+    - get
+    - list
+    - watch
+- apiGroups: [apps]
+  resources:
+    - statefulsets
+    - deployments
+    - replicasets
+  verbs:
+    - get
+    - list
+    - watch
+    - create
+    - delete
+    - update
+    - patch
+- apiGroups: [extensions]
+  resources:
+    - deployments
+    - replicasets
+    - ingresses
+  verbs:
+    - get
+    - list
+    - watch
+    - create
+    - delete
+    - update
+    - patch
+- apiGroups: [batch]
+  resources:
+    - cronjobs
+    - jobs
+  verbs:
+    - get
+    - list
+    - watch
+    - create
+    - delete
+    - update
+    - patch
+---
+# role binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rvr-k8s-rb
+  namespace: test
+subjects:
+- kind: ServiceAccount
+  name: rvr-k8s-sa
+  apiGroup: ""
+roleRef:
+  kind: Role
+  name: rvr-k8s-role
+  apiGroup: ""

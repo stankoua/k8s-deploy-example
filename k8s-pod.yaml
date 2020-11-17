@@ -1,0 +1,77 @@
+---
+# test-svc
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-svc
+  labels:
+    name: test-svc
+    app.kubernetes.io/name: test-k8s
+    app.kubernetes.io/instance: test-k8s
+  namespace: test
+spec:
+  type: NodePort
+  sessionAffinity: None
+  ports:
+  - port: 4200
+    protocol: TCP
+    name: http
+  selector:
+    app: test
+    component: test-app
+---
+# test pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-pod
+  labels:
+    name: test-pod
+    app: test
+    component: test-app
+    app.kubernetes.io/name: test-k8s
+    app.kubernetes.io/instance: test-k8s
+  namespace: test
+spec:
+  selector:
+    matchLabels:
+      app: test
+      component: test-app
+  template:
+    metadata:
+      labels:
+        app: test
+        component: test-app
+    spec:
+      imagePullSecrets:
+        - name: registry-secret
+      serviceAccountName: rvr-k8s-sa
+      automountServiceAccountToken: true
+      securityContext:
+        {}
+      containers:
+        - name: test-container
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 101
+          image: "stankoua/k8s-deploy-test:1.0-SNAPSHOT"
+          imagePullPolicy: Always
+          ports:
+            - name: http-port
+              containerPort: 4200
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http-port
+            initialDelaySeconds: 30
+            failureThreshold: 18
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http-port
+            initialDelaySeconds: 30
+            periodSeconds: 60
+          resources:
+            {}
