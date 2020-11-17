@@ -55,14 +55,26 @@ public class Ingress {
 
         // create ingresses
         ExtensionsV1beta1Ingress ingressDescriptor = buildNamespaceIngress();
-        ingressApi.create(ingressDescriptor);
-        ingressApi.create(NAMESPACE, buildNamespaceIngress(), new CreateOptions());
+        KubernetesApiResponse<ExtensionsV1beta1Ingress> createResponse = ingressApi.create(ingressDescriptor);
+        if (createResponse == null) {
+            System.out.println("response is null");
+            System.out.println(createResponse);
+        } else {
+            System.out.println("==============+>>> item");
+            System.out.println(createResponse.getObject());
+        }
+
+        KubernetesApiResponse<ExtensionsV1beta1Ingress> createResponse2 = ingressApi.create(NAMESPACE, buildNamespaceIngress(), new CreateOptions());
+        if (createResponse2 == null) {
+            System.out.println("response is null");
+            System.out.println(createResponse2);
+        } else {
+            System.out.println("==============+>>> item");
+            System.out.println(createResponse2.getObject());
+        }
 
         // list ingressess
         KubernetesApiResponse<ExtensionsV1beta1IngressList> responseList = ingressApi.list(NAMESPACE);
-            // ingressApi.listNamespacedPod("test", null, null, null, null, null, null, null, null, null);
-            // api.listPodForAllNamespaces(null, null, null, null, null, null, null, null, null);
-
         if (responseList == null) {
             System.out.println("response is null");
             System.out.println(responseList);
@@ -76,8 +88,6 @@ public class Ingress {
             }
         }
     }
-
-    // private static 
 
     private static ExtensionsV1beta1Ingress buildNamespaceIngress() {
         var annotations = new HashMap<String, String>();
