@@ -52,7 +52,7 @@
               <!-- MainClass in mainfest make a executable jar -->
               <archive>
                 <manifest>
-                  <mainClass>com.poc.k8s.Ingress</mainClass>
+                  <mainClass>com.poc.k8s.IngressBeta</mainClass>
                 </manifest>
               </archive>
 

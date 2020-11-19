@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    ingressclass.kubernetes.io/is-default-class: 'True'
+    ingress.bluemix.net/redirect-to-https: 'True'
+    ingress.kubernetes.io/force-ssl-redirect: 'True'
+  labels:
+    component: test
+    name: test-ingress
+  name: test-ingress
+  namespace: test
+spec:
+  rules:
+  - host: k8s.test.local
+    http:
+      paths:
+      - backend:
+          serviceName: test-svc
+          servicePort: '4200'
+        path: /worker
+  tls:
+  - hosts:
+    - subdomain.k8s.test.local
+    secretName: registry-secret
+status:
+  loadBalancer:
+    ingress:
+    - hostname: subdomain.k8s.test.local

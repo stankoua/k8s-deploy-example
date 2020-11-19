@@ -1,0 +1,25 @@
+# Source: river/templates/ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ex-ingress
+  namespace: test
+  labels:
+    name: ex-ingress
+    app: test
+    component: ingress
+    app.kubernetes.io/name: ex-ingress
+  annotations:
+    ingress.bluemix.net/redirect-to-https: "True"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    ingressclass.kubernetes.io/is-default-class: "true"
+  generation: 1
+spec:
+  rules:
+    - host: "ingress.test.local"
+      http:
+        paths:
+        - path: /api
+          backend:
+            serviceName: test-server-svc
+            servicePort: 8080
